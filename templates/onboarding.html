@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PogClip — Welcome!</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#07090D; --card:#111621; --card2:#161D2A; --border:#1C2333;
+  --cyan:#00F0FF; --pink:#FF2D6B; --purple:#8B5CF6;
+  --green:#22C55E; --text:#EDF2F7; --muted:#5A6A80;
+}
+body {
+  background:var(--bg); color:var(--text);
+  font-family:'Barlow',sans-serif; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:2rem;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);
+  pointer-events:none;
+}
+
+.step-bar {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(7,9,13,0.95); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 2rem;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:3px; text-decoration:none; color:var(--text); }
+.logo em { color:var(--cyan); font-style:normal; }
+.steps { display:flex; align-items:center; }
+.step { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.8rem; font-size:0.78rem; font-weight:600; color:var(--muted); cursor:pointer; }
+.step.active { color:var(--cyan); }
+.step.done { color:var(--green); }
+.step-num { width:22px; height:22px; border-radius:50%; border:2px solid var(--muted); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; flex-shrink:0; }
+.step.active .step-num { border-color:var(--cyan); color:var(--cyan); background:rgba(0,240,255,0.1); }
+.step.done .step-num { border-color:var(--green); background:var(--green); color:#000; }
+.step-connector { width:24px; height:1px; background:var(--border); }
+.skip-link { font-size:0.8rem; color:var(--muted); cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+.skip-link:hover { color:var(--text); }
+
+.screen { display:none; max-width:560px; width:100%; padding-top:80px; }
+.screen.active { display:flex; flex-direction:column; align-items:center; }
+
+.welcome-emoji { font-size:3.5rem; margin-bottom:1.5rem; display:block; text-align:center; animation:bounceIn 0.6s ease; }
+@keyframes bounceIn { 0%{transform:scale(0.5);opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
+.screen-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.2rem,5vw,3.2rem); letter-spacing:2px; text-align:center; margin-bottom:0.5rem; }
+.screen-title em { color:var(--cyan); font-style:normal; }
+.screen-sub { color:var(--muted); font-size:0.95rem; text-align:center; line-height:1.7; margin-bottom:2rem; }
+.screen-sub strong { color:var(--text); }
+
+.expect-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; margin-bottom:2rem; width:100%; }
+.expect-title { font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; color:var(--cyan); font-weight:700; margin-bottom:1rem; }
+.expect-item { display:flex; align-items:flex-start; gap:0.75rem; padding:0.65rem 0; border-bottom:1px solid var(--border); }
+.expect-item:last-child { border-bottom:none; }
+.ei { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+.ei-cyan { background:rgba(0,240,255,0.1); }
+.ei-pink { background:rgba(255,45,107,0.1); }
+.ei-purple { background:rgba(139,92,246,0.1); }
+.ei-green { background:rgba(34,197,94,0.1); }
+.expect-text strong { display:block; font-size:0.88rem; margin-bottom:2px; }
+.expect-text span { font-size:0.78rem; color:var(--muted); }
+
+.connect-cards { display:flex; flex-direction:column; gap:0.85rem; width:100%; margin-bottom:1.5rem; }
+.connect-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1rem 1.2rem; display:flex; align-items:center; gap:1rem; transition:all 0.2s; position:relative; overflow:hidden; }
+.connect-card.connected { border-color:rgba(34,197,94,0.3); }
+.connect-card.connected::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); }
+.pl { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+.pl-twitch { background:rgba(145,70,255,0.15); border:1px solid rgba(145,70,255,0.3); }
+.pl-kick { background:rgba(83,252,24,0.1); border:1px solid rgba(83,252,24,0.2); }
+.pl-tiktok { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); }
+.pl-youtube { background:rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.2); }
+.pl-ig { background:rgba(225,48,108,0.1); border:1px solid rgba(225,48,108,0.2); }
+.platform-info { flex:1; }
+.platform-name { font-weight:700; font-size:0.95rem; margin-bottom:2px; }
+.platform-desc { font-size:0.75rem; color:var(--muted); }
+.conn-btn { padding:0.45rem 1rem; border-radius:8px; font-family:'Barlow',sans-serif; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0; }
+.cb-cyan { background:var(--cyan); color:#000; border:none; }
+.cb-cyan:hover { opacity:0.85; }
+.cb-opt { background:transparent; color:var(--muted); border:1px solid var(--border); }
+.cb-opt:hover { border-color:var(--cyan); color:var(--cyan); }
+.cb-done { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+
+.security-note { display:flex; align-items:flex-start; gap:0.75rem; background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.15); border-radius:10px; padding:1rem; margin-bottom:1.5rem; width:100%; }
+.security-note p { font-size:0.78rem; color:var(--muted); line-height:1.6; }
+.security-note p strong { color:var(--green); }
+
+.template-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; color:var(--muted); font-weight:700; margin-bottom:0.75rem; width:100%; }
+.template-pills { display:flex; gap:0.5rem; flex-wrap:wrap; width:100%; margin-bottom:1.5rem; }
+.pill { padding:0.5rem 1rem; border-radius:100px; border:1px solid var(--border); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s; color:var(--muted); background:var(--card); }
+.pill.on { background:rgba(0,240,255,0.1); border-color:var(--cyan); color:var(--cyan); }
+
+.style-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem; width:100%; margin-bottom:1.5rem; }
+.style-card { background:var(--card); border:2px solid var(--border); border-radius:14px; padding:1rem; cursor:pointer; transition:all 0.2s; text-align:center; position:relative; }
+.style-card:hover { transform:translateY(-2px); }
+.style-card.selected { border-color:var(--cyan); background:rgba(0,240,255,0.04); }
+.style-card.selected::after { content:'✓'; position:absolute; top:8px; right:10px; font-size:0.7rem; font-weight:800; color:var(--cyan); }
+.style-preview { background:#000; border-radius:8px; height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:0.6rem; overflow:hidden; }
+.style-name { font-weight:800; font-size:0.82rem; margin-bottom:0.25rem; }
+.style-desc { font-size:0.7rem; color:var(--muted); line-height:1.4; }
+.ai-pick { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); color:var(--purple); font-size:0.62rem; font-weight:700; padding:2px 7px; border-radius:100px; margin-top:0.4rem; }
+
+.cap-slam { font-family:'Barlow',sans-serif; font-size:14px; font-weight:900; color:#fff; text-transform:uppercase; text-shadow:2px 2px 0 #000; }
+.cap-highlight { font-size:13px; font-weight:900; color:#fff; text-transform:uppercase; text-shadow:2px 2px 0 #000; }
+.cap-highlight .hl { color:#00F0FF; }
+.cap-split { font-size:16px; font-weight:900; text-transform:uppercase; background:linear-gradient(180deg,#fff 50%,#00F0FF 50%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.cap-kinetic { font-size:13px; font-weight:900; color:#fff; text-transform:uppercase; display:flex; gap:4px; }
+.cap-kinetic span:nth-child(1){color:#FF2D6B;transform:rotate(-4deg);display:inline-block;}
+.cap-kinetic span:nth-child(2){color:#FFDD00;transform:rotate(2deg);display:inline-block;font-size:16px;}
+.cap-kinetic span:nth-child(3){color:#00F0FF;transform:rotate(-2deg);display:inline-block;}
+.cap-street { font-size:12px; font-weight:900; color:#fff; text-transform:uppercase; }
+.cap-street .s1{color:#FF2D6B;}.cap-street .s2{color:#FFDD00;}
+.cap-minimal { font-size:11px; color:rgba(255,255,255,0.85); border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:2px; }
+
+.dl-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; width:100%; text-align:center; margin-bottom:1.5rem; position:relative; overflow:hidden; }
+.dl-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--purple)); }
+.dl-icon { font-size:3rem; margin-bottom:0.75rem; }
+.dl-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:2px; margin-bottom:0.5rem; }
+.dl-sub { color:var(--muted); font-size:0.85rem; line-height:1.6; margin-bottom:1.5rem; }
+.dl-step { display:flex; gap:0.75rem; padding:0.7rem 0; border-bottom:1px solid var(--border); text-align:left; font-size:0.85rem; }
+.dl-step:last-child { border-bottom:none; }
+.dl-n { width:24px; height:24px; border-radius:50%; background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.2); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; color:var(--cyan); flex-shrink:0; margin-top:1px; }
+.dl-txt strong { display:block; margin-bottom:2px; }
+.dl-txt span { font-size:0.75rem; color:var(--muted); }
+
+.done-circle { width:100px; height:100px; background:rgba(34,197,94,0.1); border:2px solid rgba(34,197,94,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; margin:0 auto 1.5rem; animation:bounceIn 0.5s ease; }
+.checklist { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.2rem; width:100%; margin-bottom:2rem; }
+.check-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border); font-size:0.88rem; }
+.check-item:last-child { border-bottom:none; }
+.ci { color:var(--green); font-weight:800; }
+
+.btn { width:100%; padding:0.95rem; background:var(--cyan); color:#000; border:none; border-radius:10px; font-family:'Barlow',sans-serif; font-size:1rem; font-weight:800; cursor:pointer; transition:all 0.2s; margin-bottom:0.75rem; }
+.btn:hover { opacity:0.88; transform:translateY(-1px); }
+.btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--cyan); color:var(--cyan); }
+.btn-gradient { background:linear-gradient(135deg,var(--cyan),var(--purple)); }
+
+/* Alert box */
+.alert { padding:0.75rem 1rem; border-radius:8px; font-size:0.85rem; margin-bottom:1rem; width:100%; }
+.alert-success { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); color:var(--green); }
+.alert-error { background:rgba(255,45,107,0.1); border:1px solid rgba(255,45,107,0.2); color:var(--pink); }
+</style>
+</head>
+<body>
+
+<div class="step-bar">
+  <a href="/" class="logo">POG<em>CLIP</em></a>
+  <div class="steps">
+    <div class="step done" id="s1" onclick="goTo(1)"><div class="step-num">✓</div><span>Welcome</span></div>
+    <div class="step-connector"></div>
+    <div class="step active" id="s2" onclick="goTo(2)"><div class="step-num">2</div><span>Connect</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s3" onclick="goTo(3)"><div class="step-num">3</div><span>Style</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s4" onclick="goTo(4)"><div class="step-num">4</div><span>Download</span></div>
+    <div class="step-connector"></div>
+    <div class="step" id="s5" onclick="goTo(5)"><div class="step-num">5</div><span>Done</span></div>
+  </div>
+  <a class="skip-link" onclick="window.location='/dashboard'">Skip to dashboard →</a>
+</div>
+
+<!-- Screen 1: Welcome -->
+<div class="screen active" id="screen1">
+  <span class="welcome-emoji">🎉</span>
+  <h1 class="screen-title">Welcome to <em>PogClip</em>{% if user %}, {{ user.username }}{% endif %}!</h1>
+  <p class="screen-sub">You're 4 steps away from having <strong>AI-powered clips ready to post</strong> every time you stream.</p>
+  <div class="expect-card">
+    <div class="expect-title">What happens next</div>
+    <div class="expect-item"><div class="ei ei-cyan">🔗</div><div class="expect-text"><strong>Connect your streaming accounts</strong><span>Link Twitch or Kick so PogClip can read your live chat</span></div></div>
+    <div class="expect-item"><div class="ei ei-pink">🎬</div><div class="expect-text"><strong>Pick your clip style</strong><span>Choose what kind of moments you want captured</span></div></div>
+    <div class="expect-item"><div class="ei ei-purple">⬇️</div><div class="expect-text"><strong>Download PogClip Live Engine</strong><span>A tiny app that runs quietly while you stream</span></div></div>
+    <div class="expect-item"><div class="ei ei-green">🔴</div><div class="expect-text"><strong>Go live — clips appear automatically</strong><span>When your stream ends your clips are ready to post</span></div></div>
+  </div>
+  <button class="btn" onclick="goTo(2)">Let's Get Started →</button>
+</div>
+
+<!-- Screen 2: Connect -->
+<div class="screen" id="screen2">
+  <h1 class="screen-title" style="margin-bottom:0.5rem">Connect Your Accounts</h1>
+  <p class="screen-sub">Connect where you stream and where you post.</p>
+
+  <!-- Show success/error messages -->
+  {% if connected == 'twitch' %}
+  <div class="alert alert-success">✓ Twitch connected successfully!</div>
+  {% endif %}
+  {% if error %}
+  <div class="alert alert-error">⚠ Connection failed. Please try again.</div>
+  {% endif %}
+
+  <div class="connect-cards">
+    <div class="connect-card {% if user and user.twitch_username %}connected{% endif %}" id="card-twitch">
+      <div class="pl pl-twitch">🟣</div>
+      <div class="platform-info">
+        <div class="platform-name">Twitch</div>
+        <div class="platform-desc">
+          {% if user and user.twitch_username %}
+            Connected as {{ user.twitch_username }}
+          {% else %}
+            Read live chat for clip detection
+          {% endif %}
+        </div>
+      </div>
+      {% if user and user.twitch_username %}
+      <span class="conn-btn cb-done">✓ Connected</span>
+      {% else %}
+      <button class="conn-btn cb-cyan" onclick="connectPlatform('twitch')">Connect</button>
+      {% endif %}
+    </div>
+
+    <div class="connect-card" id="card-kick">
+      <div class="pl pl-kick">🟢</div>
+      <div class="platform-info"><div class="platform-name">Kick</div><div class="platform-desc">Connect if you stream on Kick</div></div>
+      <button class="conn-btn cb-opt" onclick="connectPlatform('kick')">Coming Soon</button>
+    </div>
+
+    <div class="connect-card" id="card-tiktok">
+      <div class="pl pl-tiktok">🎵</div>
+      <div class="platform-info"><div class="platform-name">TikTok</div><div class="platform-desc">Post clips directly from your dashboard</div></div>
+      <button class="conn-btn cb-opt" onclick="connectPlatform('tiktok')">Connect</button>
+    </div>
+
+    <div class="connect-card" id="card-youtube">
+      <div class="pl pl-youtube">▶️</div>
+      <div class="platform-info"><div class="platform-name">YouTube Shorts</div><div class="platform-desc">Auto-post Shorts after every stream</div></div>
+      <button class="conn-btn cb-opt" onclick="connectPlatform('youtube')">Connect</button>
+    </div>
+
+    <div class="connect-card" id="card-instagram">
+      <div class="pl pl-ig">📸</div>
+      <div class="platform-info"><div class="platform-name">Instagram Reels</div><div class="platform-desc">Push clips to Reels automatically</div></div>
+      <button class="conn-btn cb-opt" onclick="connectPlatform('instagram')">Connect</button>
+    </div>
+  </div>
+
+  <div class="security-note">
+    <span>🔒</span>
+    <p><strong>Your accounts are safe.</strong> PogClip uses official OAuth — we never see your password. All tokens are encrypted with AES-256.</p>
+  </div>
+  <button class="btn" onclick="goTo(3)">Continue →</button>
+  <button class="btn btn-ghost" onclick="goTo(3)">Skip for now</button>
+</div>
+
+<!-- Screen 3: Style -->
+<div class="screen" id="screen3">
+  <h1 class="screen-title" style="margin-bottom:0.5rem">Choose Your Style</h1>
+  <p class="screen-sub">Pick what moments to capture and your edit vibe.</p>
+
+  <div class="template-label">What moments should PogClip look for?</div>
+  <div class="template-pills">
+    <div class="pill on" onclick="this.classList.toggle('on')">🔥 Hype Moments</div>
+    <div class="pill on" onclick="this.classList.toggle('on')">💀 Fail Clips</div>
+    <div class="pill on" onclick="this.classList.toggle('on')">🏆 Big Wins</div>
+    <div class="pill" onclick="this.classList.toggle('on')">😤 Reactions</div>
+    <div class="pill" onclick="this.classList.toggle('on')">🌊 Chat Memes</div>
+  </div>
+
+  <div class="template-label">Pick your edit style</div>
+  <div class="style-grid">
+    <div class="style-card selected" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-slam">NO WAY BRO</div></div>
+      <div class="style-name">Slam</div>
+      <div class="style-desc">Bold words slam in hard</div>
+      <div class="ai-pick">🧠 AI Top Pick</div>
+    </div>
+    <div class="style-card" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-highlight">BRO <span class="hl">WHAT</span> IS THIS</div></div>
+      <div class="style-name">Highlight</div>
+      <div class="style-desc">Key word lights up</div>
+    </div>
+    <div class="style-card" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-split">LETS GO</div></div>
+      <div class="style-name">Split</div>
+      <div class="style-desc">Two-tone clean text</div>
+    </div>
+    <div class="style-card" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-kinetic"><span>NO</span><span>WAY</span><span>BRO</span></div></div>
+      <div class="style-name">Kinetic</div>
+      <div class="style-desc">Words bounce with energy</div>
+    </div>
+    <div class="style-card" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-street"><span class="s1">BRO</span> that was <span class="s2">INSANE</span></div></div>
+      <div class="style-name">Street</div>
+      <div class="style-desc">Organic mixed caps</div>
+    </div>
+    <div class="style-card" onclick="selectStyle(this)">
+      <div class="style-preview"><div class="cap-minimal">no way that just happened...</div></div>
+      <div class="style-name">Minimal</div>
+      <div class="style-desc">Clean and cinematic</div>
+    </div>
+  </div>
+  <button class="btn" onclick="goTo(4)">Save & Continue →</button>
+</div>
+
+<!-- Screen 4: Download -->
+<div class="screen" id="screen4">
+  <h1 class="screen-title" style="margin-bottom:0.5rem">Download PogClip</h1>
+  <p class="screen-sub">One small app that runs in the background while you stream.</p>
+  <div class="dl-card">
+    <div class="dl-icon">⬇️</div>
+    <div class="dl-title">PogClip Live Engine</div>
+    <div class="dl-sub">Lightweight app. Uses less than 2% CPU. Runs in your system tray.</div>
+    <div>
+      <div class="dl-step"><div class="dl-n">1</div><div class="dl-txt"><strong>Download and install</strong><span>Double click the installer — done in under a minute</span></div></div>
+      <div class="dl-step"><div class="dl-n">2</div><div class="dl-txt"><strong>Paste your API key</strong><span>Find it on your download page — you only do this once</span></div></div>
+      <div class="dl-step"><div class="dl-n">3</div><div class="dl-txt"><strong>Open your streaming software and go live</strong><span>PogClip runs silently in the background</span></div></div>
+      <div class="dl-step"><div class="dl-n">4</div><div class="dl-txt"><strong>End stream — clips are waiting</strong><span>Open your dashboard and clips are already formatted</span></div></div>
+    </div>
+  </div>
+  <button class="btn btn-gradient" onclick="window.location='/download'">⬇️ Go to Download Page</button>
+  <button class="btn btn-ghost" onclick="goTo(5)">I'll download later</button>
+</div>
+
+<!-- Screen 5: Done -->
+<div class="screen" id="screen5">
+  <div class="done-circle">✓</div>
+  <h1 class="screen-title">You're <em>Live Ready!</em></h1>
+  <p class="screen-sub" style="margin-bottom:2rem">PogClip is set up and ready to catch your best moments.</p>
+  <div class="checklist">
+    <div class="check-item"><span class="ci">✓</span> Account created</div>
+    <div class="check-item"><span class="ci">✓</span> Accounts connected</div>
+    <div class="check-item"><span class="ci">✓</span> Clip style selected</div>
+    <div class="check-item"><span class="ci">✓</span> Live Engine downloaded</div>
+    <div class="check-item"><span class="ci">✓</span> AI trend learning active</div>
+  </div>
+  <button class="btn" onclick="window.location='/dashboard'">Go to My Dashboard →</button>
+</div>
+
+<script>
+let current = 1;
+
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen' + n).classList.add('active');
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('s' + i);
+    el.classList.remove('active','done');
+    const num = el.querySelector('.step-num');
+    if (i < n) { el.classList.add('done'); num.textContent = '✓'; }
+    else if (i === n) { el.classList.add('active'); num.textContent = i; }
+    else { num.textContent = i; }
+  }
+  current = n;
+  window.scrollTo(0,0);
+}
+
+function connectPlatform(p) {
+  // Twitch — real OAuth
+  if (p === 'twitch') {
+    window.location.href = '/auth/twitch';
+    return;
+  }
+  // Kick — coming soon
+  if (p === 'kick') {
+    alert('Kick connection coming soon!');
+    return;
+  }
+  // Others — visual for now
+  const btn = document.querySelector('#card-' + p + ' .conn-btn');
+  const card = document.getElementById('card-' + p);
+  if (!btn) return;
+  btn.textContent = 'Connecting...';
+  btn.style.opacity = '0.6';
+  setTimeout(() => {
+    btn.textContent = '✓ Connected';
+    btn.className = 'conn-btn cb-done';
+    card.classList.add('connected');
+  }, 1200);
+}
+
+function selectStyle(card) {
+  document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// Check URL params for connection status
+const params = new URLSearchParams(window.location.search);
+if (params.get('connected') === 'twitch') {
+  goTo(2);
+} else {
+  goTo(1);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PogClip — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#07090D; --card:#111621; --border:#1C2333;
+  --cyan:#00F0FF; --pink:#FF2D6B; --green:#22C55E;
+  --text:#EDF2F7; --muted:#5A6A80;
+}
+body {
+  background:var(--bg); color:var(--text);
+  font-family:'Barlow',sans-serif;
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:1.5rem;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);
+  background-size:50px 50px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);
+  pointer-events:none;
+}
+.logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem; letter-spacing:3px;
+  text-decoration:none; color:var(--text);
+  margin-bottom:2rem;
+}
+.logo em { color:var(--cyan); font-style:normal; }
+
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:2.5rem;
+  width:100%; max-width:440px;
+  position:relative; overflow:hidden;
+}
+.card::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+}
+
+.card-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem; letter-spacing:2px; margin-bottom:0.35rem;
+}
+.card-sub { color:var(--muted); font-size:0.88rem; margin-bottom:2rem; }
+
+.plan-badge {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.2);
+  color:var(--green); font-size:0.75rem; font-weight:700;
+  padding:0.3rem 0.8rem; border-radius:100px;
+  margin-bottom:1.5rem; letter-spacing:0.5px;
+}
+
+.errors {
+  background:rgba(255,45,107,0.08);
+  border:1px solid rgba(255,45,107,0.2);
+  border-radius:8px; padding:0.75rem 1rem;
+  margin-bottom:1.5rem;
+}
+.errors ul { list-style:none; }
+.errors li {
+  color:var(--pink); font-size:0.83rem;
+  padding:0.2rem 0; display:flex; align-items:center; gap:0.4rem;
+}
+.errors li::before { content:'✗'; font-weight:800; }
+
+.field { margin-bottom:1.1rem; }
+.field label {
+  display:block; font-size:0.75rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--muted); margin-bottom:0.4rem;
+}
+.field input {
+  width:100%; padding:0.85rem 1rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-family:'Barlow',sans-serif;
+  font-size:0.95rem; transition:border-color 0.2s; outline:none;
+}
+.field input:focus { border-color:var(--cyan); }
+.field input::placeholder { color:var(--muted); }
+
+.password-hint {
+  font-size:0.72rem; color:var(--muted);
+  margin-top:0.3rem;
+}
+
+.terms {
+  display:flex; align-items:flex-start; gap:0.6rem;
+  font-size:0.82rem; color:var(--muted);
+  margin-bottom:1.5rem; cursor:pointer; line-height:1.5;
+}
+.terms input { width:auto; margin-top:2px; accent-color:var(--cyan); flex-shrink:0; }
+.terms a { color:var(--cyan); text-decoration:none; }
+
+.btn {
+  width:100%; padding:0.95rem;
+  background:var(--cyan); color:#000;
+  border:none; border-radius:10px;
+  font-family:'Barlow',sans-serif;
+  font-size:1rem; font-weight:800;
+  cursor:pointer; transition:all 0.2s;
+}
+.btn:hover { opacity:0.88; transform:translateY(-1px); }
+
+.divider {
+  display:flex; align-items:center; gap:1rem;
+  margin:1.5rem 0; color:var(--muted); font-size:0.8rem;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.login-link {
+  text-align:center; font-size:0.88rem; color:var(--muted);
+}
+.login-link a { color:var(--cyan); text-decoration:none; font-weight:600; }
+.login-link a:hover { text-decoration:underline; }
+
+/* What you get box */
+.perks {
+  background:rgba(0,240,255,0.03);
+  border:1px solid rgba(0,240,255,0.1);
+  border-radius:10px; padding:1rem;
+  margin-bottom:1.5rem;
+}
+.perks-title {
+  font-size:0.7rem; text-transform:uppercase;
+  letter-spacing:1.5px; color:var(--cyan);
+  font-weight:700; margin-bottom:0.6rem;
+}
+.perk {
+  display:flex; align-items:center; gap:0.5rem;
+  font-size:0.82rem; color:var(--muted);
+  padding:0.2rem 0;
+}
+.perk::before { content:'✓'; color:var(--cyan); font-weight:800; }
+</style>
+</head>
+<body>
+
+<a href="/" class="logo">POG<em>CLIP</em></a>
+
+<div class="card">
+  <h1 class="card-title">Create Account</h1>
+  <p class="card-sub">Start clipping your stream automatically. Free forever.</p>
+
+  <div class="plan-badge">✓ Free plan — no credit card needed</div>
+
+  {% if errors %}
+  <div class="errors">
+    <ul>
+      {% for error in errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="perks">
+    <div class="perks-title">Free plan includes</div>
+    <div class="perk">3 auto-clips per stream</div>
+    <div class="perk">Twitch and Kick support</div>
+    <div class="perk">TikTok and Shorts formatting</div>
+    <div class="perk">Cloud storage for 7 days</div>
+  </div>
+
+  <form method="POST" action="/signup">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="yourname"
+             value="{{ username or '' }}" required autofocus
+             minlength="3" maxlength="30">
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@email.com"
+             value="{{ email or '' }}" required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••"
+             required minlength="8">
+      <div class="password-hint">At least 8 characters</div>
+    </div>
+
+    <label class="terms">
+      <input type="checkbox" required>
+      I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+    </label>
+
+    <button type="submit" class="btn">Create Free Account →</button>
+  </form>
+
+  <div class="divider">already have an account?</div>
+
+  <div class="login-link">
+    <a href="/login">Log in here</a>
+  </div>
+</div>
+
+</body>
+</html>
